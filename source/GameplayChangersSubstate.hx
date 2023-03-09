@@ -97,6 +97,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.6;
+		bg.scrollFactor.set();
 		add(bg);
 
 		// avoids lagspikes while scrolling through menus!
@@ -118,6 +119,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 			optionText.scaleX = 0.8;
 			optionText.scaleY = 0.8;
 			optionText.targetY = i;
+			optionText.scrollFactor.set();
 			grpOptions.add(optionText);
 
 			if (optionsArray[i].type == 'bool')
@@ -131,6 +133,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 				checkbox.offsetY = -120;
 				checkbox.ID = i;
 				checkboxGroup.add(checkbox);
+				checkbox.scrollFactor.set();
 			}
 			else
 			{
@@ -140,6 +143,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 				valueText.copyAlpha = true;
 				valueText.ID = i;
 				grpTexts.add(valueText);
+				valueText.scrollFactor.set();
 				optionsArray[i].setChild(valueText);
 			}
 			updateTextFrom(optionsArray[i]);

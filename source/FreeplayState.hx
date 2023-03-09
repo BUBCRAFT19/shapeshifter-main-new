@@ -60,7 +60,6 @@ class FreeplayState extends MusicBeatState
 	var bgClr:FlxSprite;
 	var intendedColor:Int;
 	var colorTween:FlxTween;
-
 	// D&B variables, lol
 	private var inMainFreeplayState:Bool = false;
 	private var curPackImage:Int = 0;
@@ -212,12 +211,6 @@ class FreeplayState extends MusicBeatState
 		}
 		WeekData.setDirectoryFromWeek();
 
-		var newColor:Int = songs[curSelected].color;
-		if (newColor != intendedColor)
-			intendedColor = newColor;
-		bgClr.color = intendedColor;
-		FlxTween.tween(bg, {alpha: 0}, 1);
-
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		scoreText.scrollFactor.set();
@@ -238,6 +231,7 @@ class FreeplayState extends MusicBeatState
 			curSelected = 0;
 		bgClr.color = songs[curSelected].color;
 		intendedColor = bgClr.color;
+		FlxTween.tween(bg, {alpha: 0}, 1);
 
 		if (lastDifficultyName == '')
 		{
