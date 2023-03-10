@@ -7,19 +7,14 @@ import flixel.FlxObject;
 import Discord.DiscordClient;
 #end
 import editors.ChartingState;
-import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
-import lime.utils.Assets;
 import flixel.system.FlxSound;
-import openfl.utils.Assets as OpenFlAssets;
 import WeekData;
 #if MODS_ALLOWED
 import sys.FileSystem;
@@ -50,7 +45,7 @@ class FreeplayState extends MusicBeatState
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
-	private var songTypes:Array<String> = ['main', 'covers'];
+	private var songTypes:Array<String> = ['main', 'freeplay', 'covers'];
 
 	private var iconArray:Array<HealthIcon> = [];
 	private var titles:Array<FlxSprite> = [];
@@ -133,133 +128,6 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
-	public function loadProperPack()
-	{
-		WeekData.reloadWeekFiles(false);
-
-		for (i in 0...WeekData.weeksList.length)
-		{
-			// This might work, it might not, idk. I'll check back in to see if it works -Ruv
-			if (weekPackCheck(WeekData.weeksList[i]) != songTypes[curPackImage].toLowerCase())
-				continue;
-
-			if (weekIsLocked(WeekData.weeksList[i]))
-				continue;
-
-			var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
-			var leSongs:Array<String> = [];
-			var leChars:Array<String> = [];
-
-			for (j in 0...leWeek.songs.length)
-			{
-				leSongs.push(leWeek.songs[j][0]);
-				leChars.push(leWeek.songs[j][1]);
-			}
-
-			WeekData.setDirectoryFromWeek(leWeek);
-			for (song in leWeek.songs)
-			{
-				var colors:Array<Int> = song[2];
-				if (colors == null || colors.length < 3)
-				{
-					colors = [146, 113, 253];
-				}
-				addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
-			}
-		}
-		WeekData.loadTheFirstEnabledMod();
-	}
-
-	public function loadRealFreeplay()
-	{
-		grpSongs = new FlxTypedGroup<Alphabet>();
-		add(grpSongs);
-
-		for (i in 0...songs.length)
-		{
-			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
-			songText.isMenuItem = true;
-			songText.targetY = i - curSelected;
-			grpSongs.add(songText);
-			songText.scrollFactor.set();
-
-			if (songText.width > 980)
-			{
-				var textScale:Float = 980 / songText.width;
-				songText.scale.x = textScale;
-				for (letter in songText.letters)
-				{
-					letter.x *= textScale;
-					letter.offset.x *= textScale;
-				}
-				// songText.updateHitbox();
-				// trace(songs[i].songName + ' new scale: ' + textScale);
-			}
-
-			Paths.currentModDirectory = songs[i].folder;
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			icon.sprTracker = songText;
-			icon.scrollFactor.set();
-
-			// using a FlxGroup is too much fuss!
-			iconArray.push(icon);
-			add(icon);
-
-			// songText.x += 40;
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			// songText.screenCenter(X);
-		}
-		WeekData.setDirectoryFromWeek();
-
-		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
-		scoreText.scrollFactor.set();
-
-		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
-		scoreBG.alpha = 0.6;
-		add(scoreBG);
-		scoreBG.scrollFactor.set();
-
-		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
-		diffText.font = scoreText.font;
-		add(diffText);
-		diffText.scrollFactor.set();
-
-		add(scoreText);
-
-		if (curSelected >= songs.length)
-			curSelected = 0;
-		bgClr.color = songs[curSelected].color;
-		intendedColor = bgClr.color;
-		FlxTween.tween(bg, {alpha: 0}, 1);
-
-		if (lastDifficultyName == '')
-		{
-			lastDifficultyName = CoolUtil.defaultDifficulty;
-		}
-		curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
-
-		changeSelection();
-		changeDiff();
-
-		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
-		textBG.alpha = 0.6;
-		textBG.scrollFactor.set();
-		add(textBG);
-
-		#if PRELOAD_ALL
-		var leText:String = "Press SPACE to listen to the Song / Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
-		var size:Int = 16;
-		#else
-		var leText:String = "Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
-		var size:Int = 18;
-		#end
-		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, size);
-		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
-		text.scrollFactor.set();
-		add(text);
-	}
-
 	override function closeSubState()
 	{
 		changeSelection(0, false);
@@ -270,21 +138,6 @@ class FreeplayState extends MusicBeatState
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, color:Int)
 	{
 		songs.push(new SongMetadata(songName, weekNum, songCharacter, color));
-	}
-
-	public function updatePackSelection(change:Int, playSound:Bool = true)
-	{
-		if (playSound)
-			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-
-		curPackImage += change;
-		if (curPackImage == -1)
-			curPackImage = songTypes.length - 1;
-
-		if (curPackImage == songTypes.length)
-			curPackImage = 0;
-
-		camFollow.x = icons[curPackImage].x + (icons[curPackImage].width / 2);
 	}
 
 	function weekIsLocked(name:String):Bool
@@ -750,12 +603,6 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
-	function weekPackCheck(name:String)
-	{
-		var leWeek:WeekData = WeekData.weeksLoaded.get(name);
-		return leWeek.pack;
-	}
-
 	private function positionHighscore()
 	{
 		scoreText.x = FlxG.width - scoreText.width - 6;
@@ -764,6 +611,154 @@ class FreeplayState extends MusicBeatState
 		scoreBG.x = FlxG.width - (scoreBG.scale.x / 2);
 		diffText.x = Std.int(scoreBG.x + (scoreBG.width / 2));
 		diffText.x -= diffText.width / 2;
+	}
+
+	public function loadRealFreeplay()
+	{
+		grpSongs = new FlxTypedGroup<Alphabet>();
+		add(grpSongs);
+
+		for (i in 0...songs.length)
+		{
+			var songText:Alphabet = new Alphabet(90, 320, songs[i].songName, true);
+			songText.isMenuItem = true;
+			songText.targetY = i - curSelected;
+			grpSongs.add(songText);
+			songText.scrollFactor.set();
+
+			if (songText.width > 980)
+			{
+				var textScale:Float = 980 / songText.width;
+				songText.scale.x = textScale;
+				for (letter in songText.letters)
+				{
+					letter.x *= textScale;
+					letter.offset.x *= textScale;
+				}
+				// songText.updateHitbox();
+				// trace(songs[i].songName + ' new scale: ' + textScale);
+			}
+
+			Paths.currentModDirectory = songs[i].folder;
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			icon.sprTracker = songText;
+			icon.scrollFactor.set();
+
+			// using a FlxGroup is too much fuss!
+			iconArray.push(icon);
+			add(icon);
+
+			// songText.x += 40;
+			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+			// songText.screenCenter(X);
+		}
+		WeekData.setDirectoryFromWeek();
+
+		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
+		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+		scoreText.scrollFactor.set();
+
+		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
+		scoreBG.alpha = 0.6;
+		add(scoreBG);
+		scoreBG.scrollFactor.set();
+
+		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+		diffText.font = scoreText.font;
+		add(diffText);
+		diffText.scrollFactor.set();
+
+		add(scoreText);
+
+		/*if (curSelected >= songs.length)
+				curSelected = 0;
+			bgClr.color = songs[curSelected].color;
+			intendedColor = bgClr.color; */
+		FlxTween.tween(bg, {alpha: 0}, 1);
+
+		if (lastDifficultyName == '')
+		{
+			lastDifficultyName = CoolUtil.defaultDifficulty;
+		}
+		curDifficulty = Math.round(Math.max(0, CoolUtil.defaultDifficulties.indexOf(lastDifficultyName)));
+
+		changeSelection();
+		changeDiff();
+
+		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
+		textBG.alpha = 0.6;
+		textBG.scrollFactor.set();
+		add(textBG);
+
+		#if PRELOAD_ALL
+		var leText:String = "Press SPACE to listen to the Song / Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
+		var size:Int = 16;
+		#else
+		var leText:String = "Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
+		var size:Int = 18;
+		#end
+		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, size);
+		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
+		text.scrollFactor.set();
+		add(text);
+	}
+
+	public function loadProperPack()
+	{
+		WeekData.reloadWeekFiles(false);
+
+		for (i in 0...WeekData.weeksList.length)
+		{
+			// This might work, it might not, idk. I'll check back in to see if it works -Ruv
+			if (weekPackCheck(WeekData.weeksList[i]) != songTypes[curPackImage].toLowerCase())
+				continue;
+
+			if (weekIsLocked(WeekData.weeksList[i]))
+				continue;
+
+			var leWeek:WeekData = WeekData.weeksLoaded.get(WeekData.weeksList[i]);
+			var leSongs:Array<String> = [];
+			var leChars:Array<String> = [];
+
+			for (j in 0...leWeek.songs.length)
+			{
+				leSongs.push(leWeek.songs[j][0]);
+				leChars.push(leWeek.songs[j][1]);
+			}
+
+			WeekData.setDirectoryFromWeek(leWeek);
+			for (song in leWeek.songs)
+			{
+				var colors:Array<Int> = song[2];
+				if (colors == null || colors.length < 3)
+				{
+					colors = [146, 113, 253];
+				}
+				addSong(song[0], i, song[1], FlxColor.fromRGB(colors[0], colors[1], colors[2]));
+			}
+		}
+		WeekData.loadTheFirstEnabledMod();
+	}
+
+	public function updatePackSelection(change:Int, playSound:Bool = true)
+	{
+		if (playSound)
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+
+		curPackImage += change;
+		if (curPackImage == -1)
+			curPackImage = songTypes.length - 1;
+
+		if (curPackImage == songTypes.length)
+			curPackImage = 0;
+
+		camFollow.x = icons[curPackImage].x + (icons[curPackImage].width / 2);
+	}
+
+	function weekPackCheck(name:String)
+	{
+		var leWeek:WeekData = WeekData.weeksLoaded.get(name);
+		return leWeek.pack;
 	}
 }
 

@@ -1,37 +1,47 @@
 package;
 
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
+
+using StringTools;
 
 class BGSprite extends FlxSprite
 {
-	private var idleAnim:String;
-	public function new(image:String, x:Float = 0, y:Float = 0, ?scrollX:Float = 1, ?scrollY:Float = 1, ?animArray:Array<String> = null, ?loop:Bool = false) {
-		super(x, y);
+	public function new(posX:Float, posY:Float, path:String = '', animations:Array<Animation>, scrollX:Float = 1, scrollY:Float = 1, antialiasing:Bool = true,
+			active:Bool = true)
+	{
+		super(posX, posY);
 
-		if (animArray != null) {
-			frames = Paths.getSparrowAtlas(image);
-			for (i in 0...animArray.length) {
-				var anim:String = animArray[i];
-				animation.addByPrefix(anim, anim, 24, loop);
-				if(idleAnim == null) {
-					idleAnim = anim;
-					animation.play(anim);
+		var hasAnimations:Bool = animations != null;
+
+		if (path != '')
+		{
+			if (hasAnimations)
+			{
+				frames = Paths.getSparrowAtlas(path);
+				for (i in 0...animations.length)
+				{
+					var curAnim = animations[i];
+					if (curAnim != null)
+					{
+						if (curAnim.indices != null)
+						{
+							animation.addByIndices(curAnim.name, curAnim.prefixName, curAnim.indices, "", curAnim.frames, curAnim.looped, curAnim.flip[0],
+								curAnim.flip[1]);
+						}
+						else
+						{
+							animation.addByPrefix(curAnim.name, curAnim.prefixName, curAnim.frames, curAnim.looped, curAnim.flip[0], curAnim.flip[1]);
+						}
+					}
 				}
 			}
-		} else {
-			if(image != null) {
-				loadGraphic(Paths.image(image));
+			else
+			{
+				loadGraphic(Paths.image(path));
 			}
-			active = false;
 		}
+		this.antialiasing = antialiasing;
 		scrollFactor.set(scrollX, scrollY);
-		antialiasing = ClientPrefs.globalAntialiasing;
-	}
-
-	public function dance(?forceplay:Bool = false) {
-		if(idleAnim != null) {
-			animation.play(idleAnim, forceplay);
-		}
+		this.active = active;
 	}
 }

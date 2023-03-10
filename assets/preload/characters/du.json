@@ -1,0 +1,100 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "idle"
+		},
+		{
+			"offsets": [
+				8,
+				10
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "left"
+		},
+		{
+			"offsets": [
+				-2,
+				-3
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "down"
+		},
+		{
+			"offsets": [
+				-8,
+				56
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "up"
+		},
+		{
+			"offsets": [
+				-8,
+				12
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "right"
+		},
+		{
+			"offsets": [
+				0,
+				78
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "scream",
+			"indices": [],
+			"name": "scream"
+		},
+		{
+			"offsets": [
+				-1,
+				78
+			],
+			"loop": true,
+			"fps": 24,
+			"anim": "scream-loop",
+			"indices": [],
+			"name": "screamloop"
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/funy",
+	"position": [
+		100,
+		650
+	],
+	"healthicon": "du",
+	"flip_x": false,
+	"healthbar_colors": [
+		227,
+		247,
+		255
+	],
+	"camera_position": [
+		50,
+		-100
+	],
+	"sing_duration": 4.00000000000001,
+	"scale": 1
+}

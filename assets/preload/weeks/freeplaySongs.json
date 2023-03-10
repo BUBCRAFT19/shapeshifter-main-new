@@ -1,0 +1,18 @@
+{
+    "songs": [
+        ["Defeat-Guys", "face", [161, 161, 161]],
+        ["du", "face", [161, 161, 161]]
+    ],
+
+    "weekCharacters": ["dad", "bf", "gf"],
+    "weekBackground": "stage",
+
+    "storyName": "Daddy Dearest",
+    "weekBefore": "tutorial",
+    "weekName": "Week 1",
+    "startUnlocked": true,
+
+    "hideStoryMode": false,
+    "hideFreeplay": false,
+    "pack": "freeplay"
+}
